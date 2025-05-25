@@ -1,0 +1,364 @@
+import React, { useState } from 'react';
+
+const FloorPlan = () => {
+  const [selectedFloor, setSelectedFloor] = useState(1);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [showDimensions, setShowDimensions] = useState(true);
+  const [showExterior, setShowExterior] = useState(false);
+  const [showCosts, setShowCosts] = useState(false);
+
+  // Scale: 1 foot = 2 pixels for display
+  const scale = 2;
+  
+  const floors = {
+    1: {
+      name: "Ground Floor",
+      rooms: [
+        { id: 'foyer', name: 'Grand Foyer', x: 160, y: 60, width: 120, height: 100, area: '6x10 ft' },
+        { id: 'living', name: 'Living Room', x: 280, y: 60, width: 200, height: 140, area: '10x14 ft' },
+        { id: 'dining', name: 'Dining Room', x: 480, y: 60, width: 160, height: 120, area: '8x12 ft' },
+        { id: 'kitchen', name: 'Modern Kitchen', x: 480, y: 180, width: 200, height: 120, area: '10x12 ft' },
+        { id: 'powder', name: 'Powder Room', x: 160, y: 160, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'garage', name: '2-Car Garage', x: 160, y: 240, width: 240, height: 140, area: '12x14 ft' },
+        { id: 'entry', name: 'Covered Entry', x: 60, y: 60, width: 100, height: 180, area: '5x18 ft' },
+        { id: 'pantry', name: 'Walk-in Pantry', x: 680, y: 180, width: 80, height: 120, area: '4x12 ft' },
+        { id: 'study', name: 'Home Study', x: 280, y: 200, width: 120, height: 100, area: '6x10 ft' },
+        { id: 'laundry', name: 'Laundry Room', x: 400, y: 240, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'stairs1', name: 'Main Staircase', x: 400, y: 180, width: 80, height: 60, area: '4x6 ft' },
+        { id: 'storage1', name: 'Storage Under Stairs', x: 400, y: 320, width: 80, height: 60, area: '4x6 ft' },
+        { id: 'patio', name: 'Rear Patio', x: 680, y: 60, width: 80, height: 120, area: '4x12 ft' }
+      ]
+    },
+    2: {
+      name: "Second Floor",
+      rooms: [
+        { id: 'master', name: 'Master Suite', x: 520, y: 60, width: 240, height: 180, area: '12x18 ft' },
+        { id: 'master-bath', name: 'Master Ensuite', x: 520, y: 240, width: 120, height: 100, area: '6x10 ft' },
+        { id: 'master-closet', name: 'Walk-in Closet', x: 640, y: 240, width: 120, height: 100, area: '6x10 ft' },
+        { id: 'bedroom2', name: 'Bedroom 2 + Bath', x: 160, y: 60, width: 180, height: 140, area: '9x14 ft' },
+        { id: 'bath2', name: 'Ensuite 2', x: 160, y: 200, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'closet2', name: 'Closet 2', x: 240, y: 200, width: 60, height: 80, area: '3x8 ft' },
+        { id: 'bedroom3', name: 'Bedroom 3 + Bath', x: 340, y: 60, width: 180, height: 140, area: '9x14 ft' },
+        { id: 'bath3', name: 'Ensuite 3', x: 340, y: 200, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'closet3', name: 'Closet 3', x: 420, y: 200, width: 60, height: 80, area: '3x8 ft' },
+        { id: 'stairs2', name: 'Main Staircase', x: 480, y: 200, width: 80, height: 60, area: '4x6 ft' },
+        { id: 'hallway2', name: 'Upper Hallway', x: 300, y: 200, width: 40, height: 140, area: '2x14 ft' },
+        { id: 'balcony2', name: 'Master Balcony', x: 560, y: 20, width: 120, height: 40, area: '6x4 ft' },
+        { id: 'front-balcony', name: 'Front Balcony', x: 60, y: 60, width: 100, height: 160, area: '5x16 ft' }
+      ]
+    },
+    3: {
+      name: "Third Floor",
+      rooms: [
+        { id: 'bedroom4', name: 'Bedroom 4 + Bath', x: 160, y: 60, width: 180, height: 140, area: '9x14 ft' },
+        { id: 'bath4', name: 'Ensuite 4', x: 160, y: 200, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'closet4', name: 'Closet 4', x: 240, y: 200, width: 60, height: 80, area: '3x8 ft' },
+        { id: 'bedroom5', name: 'Bedroom 5 + Bath', x: 340, y: 60, width: 180, height: 140, area: '9x14 ft' },
+        { id: 'bath5', name: 'Ensuite 5', x: 340, y: 200, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'closet5', name: 'Closet 5', x: 420, y: 200, width: 60, height: 80, area: '3x8 ft' },
+        { id: 'bedroom6', name: 'Bedroom 6 + Bath', x: 520, y: 60, width: 180, height: 140, area: '9x14 ft' },
+        { id: 'bath6', name: 'Ensuite 6', x: 520, y: 200, width: 80, height: 80, area: '4x8 ft' },
+        { id: 'closet6', name: 'Closet 6', x: 600, y: 200, width: 60, height: 80, area: '3x8 ft' },
+        { id: 'stairs3', name: 'Main Staircase', x: 480, y: 200, width: 80, height: 60, area: '4x6 ft' },
+        { id: 'hallway3', name: 'Upper Hallway', x: 300, y: 200, width: 40, height: 140, area: '2x14 ft' },
+        { id: 'rooftop', name: 'Rooftop Terrace', x: 660, y: 200, width: 100, height: 140, area: '5x14 ft' },
+        { id: 'storage3', name: 'Storage Room', x: 300, y: 280, width: 80, height: 60, area: '4x6 ft' },
+        { id: 'side-balcony', name: 'Side Balcony', x: 700, y: 60, width: 60, height: 140, area: '3x14 ft' }
+      ]
+    }
+  };
+
+  const roomColors = {
+    'foyer': '#e8f4fd', 'living': '#fff2e6', 'dining': '#f0f8e6', 'kitchen': '#fdf2e9',
+    'powder': '#f8f0ff', 'garage': '#f5f5f5', 'entry': '#e8f4fd', 'pantry': '#fdf2e9',
+    'master': '#ffe6f2', 'master-bath': '#f8f0ff', 'master-closet': '#fff0e6',
+    'bedroom2': '#e6f3ff', 'bedroom3': '#e6f3ff', 'bedroom4': '#e6f3ff',
+    'bedroom5': '#e6f3ff', 'bedroom6': '#e6f3ff', 'bath2': '#f8f0ff',
+    'bath3': '#f8f0ff', 'bath4': '#f8f0ff', 'bath5': '#f8f0ff', 'bath6': '#f8f0ff',
+    'closet2': '#fff0e6', 'closet3': '#fff0e6', 'closet4': '#fff0e6', 'closet5': '#fff0e6', 'closet6': '#fff0e6',
+    'hallway2': '#f9f9f9', 'hallway3': '#f9f9f9', 'laundry': '#e6ffe6', 'study': '#fff9e6',
+    'storage1': '#f0f0f0', 'storage3': '#f0f0f0', 'rooftop': '#ffe6f2', 
+    'balcony2': '#e6ffe6', 'front-balcony': '#e6ffe6', 'side-balcony': '#e6ffe6', 'patio': '#e6ffe6',
+    'stairs1': '#ffeaa7', 'stairs2': '#ffeaa7', 'stairs3': '#ffeaa7'
+  };
+
+  const currentFloor = floors[selectedFloor];
+
+  const handleRoomClick = (room) => {
+    setSelectedRoom(selectedRoom?.id === room.id ? null : room);
+  };
+
+  const ExteriorView = () => (
+    <div className="bg-gradient-to-b from-sky-200 to-green-100 p-4 rounded-lg">
+      <svg width="800" height="500" viewBox="0 0 800 500" className="w-full h-auto border border-gray-400 bg-gradient-to-b from-sky-100 to-green-50 rounded">
+        {/* Sky and ground */}
+        <defs>
+          <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#87CEEB" />
+            <stop offset="100%" stopColor="#E0F6FF" />
+          </linearGradient>
+          <linearGradient id="houseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#F5F5F5" />
+            <stop offset="100%" stopColor="#E8E8E8" />
+          </linearGradient>
+          <linearGradient id="accentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#2C3E50" />
+            <stop offset="100%" stopColor="#34495E" />
+          </linearGradient>
+        </defs>
+        
+        {/* Lot boundary */}
+        <rect x="20" y="100" width="760" height="320" fill="url(#skyGradient)" stroke="#333" strokeWidth="2" strokeDasharray="5,5" />
+        <rect x="20" y="350" width="760" height="70" fill="#7CB342" />
+        
+        {/* Enhanced landscaping */}
+        <g>
+          {/* Large Royal Palm */}
+          <ellipse cx="120" cy="300" rx="45" ry="40" fill="#2E7D32" />
+          <rect x="115" y="320" width="10" height="30" fill="#8D6E63" />
+          
+          {/* Decorative palms */}
+          <ellipse cx="200" cy="320" rx="30" ry="25" fill="#388E3C" />
+          <rect x="197" y="330" width="6" height="20" fill="#8D6E63" />
+          
+          <ellipse cx="680" cy="310" rx="35" ry="30" fill="#2E7D32" />
+          <rect x="677" y="325" width="8" height="25" fill="#8D6E63" />
+          
+          {/* Privacy hedge */}
+          <rect x="720" y="280" width="60" height="40" fill="#4CAF50" rx="20" />
+          
+          {/* Ornamental plants */}
+          <circle cx="180" cy="370" r="8" fill="#FF5722" />
+          <circle cx="200" cy="375" r="6" fill="#E91E63" />
+          <circle cx="220" cy="370" r="10" fill="#9C27B0" />
+          
+          <circle cx="600" cy="375" r="12" fill="#FF9800" />
+          <circle cx="620" cy="370" r="8" fill="#795548" />
+          <circle cx="640" cy="375" r="10" fill="#607D8B" />
+        </g>
+        
+        {/* Modern house with enhanced aesthetics */}
+        <g>
+          {/* Ground floor - stone/concrete base */}
+          <rect x="280" y="240" width="400" height="110" fill="url(#houseGradient)" stroke="#333" strokeWidth="2" />
+          <rect x="280" y="320" width="400" height="30" fill="#95A5A6" /> {/* Stone wainscoting */}
+          
+          {/* Second floor - main living area */}
+          <rect x="280" y="170" width="400" height="70" fill="url(#houseGradient)" stroke="#333" strokeWidth="2" />
+          
+          {/* Third floor - slightly inset for visual interest */}
+          <rect x="290" y="110" width="380" height="60" fill="url(#houseGradient)" stroke="#333" strokeWidth="2" />
+          
+          {/* Modern roofing with overhangs */}
+          <rect x="275" y="105" width="390" height="5" fill="#34495E" />
+          <rect x="275" y="165" width="410" height="5" fill="#34495E" />
+          <rect x="275" y="235" width="410" height="5" fill="#34495E" />
+          
+          {/* Decorative accent bands */}
+          <rect x="280" y="200" width="400" height="8" fill="url(#accentGradient)" />
+          <rect x="290" y="140" width="380" height="6" fill="url(#accentGradient)" />
+        </g>
+        
+        {/* Enhanced architectural features */}
+        <g>
+          {/* Large feature windows with frames */}
+          <rect x="295" y="190" width="70" height="45" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          <line x1="330" y1="190" x2="330" y2="235" stroke="#2C3E50" strokeWidth="1" />
+          <line x1="295" y1="212" x2="365" y2="212" stroke="#2C3E50" strokeWidth="1" />
+          
+          <rect x="380" y="190" width="70" height="45" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          <line x1="415" y1="190" x2="415" y2="235" stroke="#2C3E50" strokeWidth="1" />
+          <line x1="380" y1="212" x2="450" y2="212" stroke="#2C3E50" strokeWidth="1" />
+          
+          <rect x="580" y="190" width="70" height="45" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          <line x1="615" y1="190" x2="615" y2="235" stroke="#2C3E50" strokeWidth="1" />
+          <line x1="580" y1="212" x2="650" y2="212" stroke="#2C3E50" strokeWidth="1" />
+          
+          {/* Second floor windows */}
+          <rect x="310" y="130" width="50" height="35" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          <rect x="380" y="130" width="50" height="35" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          <rect x="450" y="130" width="50" height="35" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          <rect x="580" y="130" width="50" height="35" fill="#4FC3F7" stroke="#2C3E50" strokeWidth="2" />
+          
+          {/* Grand entrance with columns */}
+          <rect x="260" y="270" width="20" height="80" fill="#34495E" />
+          <rect x="250" y="265" width="40" height="8" fill="#2C3E50" />
+          <rect x="255" y="255" width="30" height="10" fill="#E74C3C" /> {/* Red accent */}          
+          
+          {/* Front balcony with decorative railings */}
+          <rect x="240" y="190" width="40" height="50" fill="rgba(255,255,255,0.3)" stroke="#2C3E50" strokeWidth="2" />
+          <rect x="235" y="185" width="50" height="5" fill="#34495E" />
+          {/* Decorative railing pattern */}
+          <g stroke="#2C3E50" strokeWidth="1">
+            <line x1="245" y1="195" x2="245" y2="235" />
+            <line x1="255" y1="195" x2="255" y2="235" />
+            <line x1="265" y1="195" x2="265" y2="235" />
+            <line x1="275" y1="195" x2="275" y2="235" />
+            <line x1="242" y1="210" x2="278" y2="210" />
+            <line x1="242" y1="220" x2="278" y2="220" />
+          </g>
+          
+          {/* Side patio with pergola */}
+          <rect x="680" y="270" width="80" height="80" fill="#8D6E63" stroke="#666" strokeWidth="1" />
+          <g stroke="#8D6E63" strokeWidth="3"> {/* Pergola beams */}
+            <line x1="685" y1="265" x2="755" y2="265" />
+            <line x1="685" y1="255" x2="755" y2="255" />
+            <line x1="690" y1="250" x2="690" y2="270" />
+            <line x1="710" y1="250" x2="710" y2="270" />
+            <line x1="730" y1="250" x2="730" y2="270" />
+            <line x1="750" y1="250" x2="750" y2="270" />
+          </g>
+          
+          {/* Rooftop terrace with modern railings */}
+          <rect x="520" y="95" width="100" height="10" fill="#E74C3C" stroke="#333" strokeWidth="1" />
+          <g stroke="#2C3E50" strokeWidth="1">
+            <line x1="530" y1="85" x2="530" y2="105" />
+            <line x1="550" y1="85" x2="550" y2="105" />
+            <line x1="570" y1="85" x2="570" y2="105" />
+            <line x1="590" y1="85" x2="590" y2="105" />
+            <line x1="610" y1="85" x2="610" y2="105" />
+          </g>
+          
+          {/* Modern chimney with cap */}
+          <rect x="500" y="70" width="20" height="40" fill="#34495E" stroke="#333" strokeWidth="1" />
+          <rect x="495" y="70" width="30" height="5" fill="#2C3E50" />
+          
+          {/* Decorative wall panels */}
+          <rect x="470" y="190" width="100" height="45" fill="#ECF0F1" stroke="#BDC3C7" strokeWidth="1" />
+          <rect x="475" y="195" width="90" height="35" fill="#D5DBDB" />
+        </g>
+        
+        {/* Enhanced driveway and walkways */}
+        <g>
+          {/* Paved circular driveway */}
+          <path d="M 20 380 Q 120 360 220 375 Q 280 380 340 375" fill="none" stroke="#7F8C8D" strokeWidth="12" />
+          <path d="M 340 375 Q 380 370 420 375" fill="none" stroke="#7F8C8D" strokeWidth="12" />
+          
+          {/* Decorative paver walkway */}
+          <rect x="230" y="350" width="50" height="25" fill="#95A5A6" stroke="#7F8C8D" strokeWidth="1" />
+          <rect x="230" y="325" width="50" height="25" fill="#BDC3C7" stroke="#7F8C8D" strokeWidth="1" />
+          <rect x="230" y="300" width="50" height="25" fill="#95A5A6" stroke="#7F8C8D" strokeWidth="1" />
+          <rect x="230" y="275" width="50" height="25" fill="#BDC3C7" stroke="#7F8C8D" strokeWidth="1" />
+          
+          {/* Stepping stones */}
+          <circle cx="160" cy="340" r="8" fill="#95A5A6" />
+          <circle cx="180" cy="355" r="8" fill="#95A5A6" />
+          <circle cx="200" cy="340" r="8" fill="#95A5A6" />
+        </g>
+        
+        {/* Enhanced exterior lighting */}
+        <g>
+          <circle cx="270" cy="250" r="4" fill="#F39C12" stroke="#E67E22" strokeWidth="1" />
+          <rect x="268" y="250" width="4" height="15" fill="#34495E" />
+          
+          <circle cx="690" cy="190" r="4" fill="#F39C12" stroke="#E67E22" strokeWidth="1" />
+          <rect x="688" y="190" width="4" height="15" fill="#34495E" />
+          
+          {/* Pathway lighting */}
+          <circle cx="240" cy="320" r="2" fill="#F1C40F" />
+          <circle cx="240" cy="300" r="2" fill="#F1C40F" />
+          <circle cx="240" cy="280" r="2" fill="#F1C40F" />
+        </g>
+        
+        {/* Labels and compass */}
+        <text x="400" y="30" textAnchor="middle" className="text-lg font-bold fill-gray-800">
+          Luxury Modern 3-Story Residence
+        </text>
+        <text x="50" y="90" className="text-sm font-medium fill-blue-600">
+          STREET FRONTAGE (80')
+        </text>
+        <text x="30" y="260" className="text-sm font-medium fill-blue-600" transform="rotate(-90 30 260)">
+          LOT DEPTH (40')
+        </text>
+        
+        <g transform="translate(50, 150)">
+          <circle cx="0" cy="0" r="15" fill="white" stroke="#333" strokeWidth="1" />
+          <path d="M 0,-10 L 5,0 L 0,10 L -5,0 Z" fill="#E53E3E" />
+          <text x="0" y="-20" textAnchor="middle" className="text-xs font-bold">N</text>
+        </g>
+      </svg>
+    </div>
+  );
+
+  const CostBreakdown = () => (
+    <div className="bg-gray-50 p-4 rounded-lg">
+      <h3 className="text-lg font-semibold mb-4 text-center text-green-800">
+        Complete Construction Cost Estimate (GYD)
+      </h3>
+      
+      <div className="space-y-4 text-sm">
+        <div className="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+          <h4 className="font-medium text-blue-800 mb-2">Foundation & Structure</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>Foundation (Reinforced Concrete):</div>
+            <div className="font-medium">$5,110,000</div>
+            <div>Steel Frame & Columns:</div>
+            <div className="font-medium">$4,200,000</div>
+            <div>Concrete Slabs (3 floors):</div>
+            <div className="font-medium">$2,800,000</div>
+            <div>Staircase (Concrete/Steel):</div>
+            <div className="font-medium">$850,000</div>
+          </div>
+        </div>
+
+        <div className="bg-green-50 p-3 rounded border-l-4 border-green-400">
+          <h4 className="font-medium text-green-800 mb-2">Walls & Roofing</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>Exterior Walls (Block/Concrete):</div>
+            <div className="font-medium">$3,200,000</div>
+            <div>Interior Walls & Partitions:</div>
+            <div className="font-medium">$1,800,000</div>
+            <div>Roofing (Flat/Membrane):</div>
+            <div className="font-medium">$1,400,000</div>
+            <div>Waterproofing:</div>
+            <div className="font-medium">$650,000</div>
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
+          <h4 className="font-medium text-yellow-800 mb-2">Finishes & Fixtures</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>Flooring (Tiles/Hardwood):</div>
+            <div className="font-medium">$2,400,000</div>
+            <div>Interior Paint & Finishes:</div>
+            <div className="font-medium">$1,200,000</div>
+            <div>Exterior Cladding/Paint:</div>
+            <div className="font-medium">$1,600,000</div>
+            <div>Ceiling Finishes:</div>
+            <div className="font-medium">$900,000</div>
+          </div>
+        </div>
+
+        <div className="bg-purple-50 p-3 rounded border-l-4 border-purple-400">
+          <h4 className="font-medium text-purple-800 mb-2">Windows & Doors</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>Windows (Aluminum/Glass):</div>
+            <div className="font-medium">$1,800,000</div>
+            <div>Exterior Doors:</div>
+            <div className="font-medium">$450,000</div>
+            <div>Interior Doors:</div>
+            <div className="font-medium">$720,000</div>
+            <div>Security Features:</div>
+            <div className="font-medium">$380,000</div>
+          </div>
+        </div>
+
+        <div className="bg-orange-50 p-3 rounded border-l-4 border-orange-400">
+          <h4 className="font-medium text-orange-800 mb-2">MEP Systems</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>Electrical (Complete):</div>
+            <div className="font-medium">$2,200,000</div>
+            <div>Plumbing (6.5 Bathrooms):</div>
+            <div className="font-medium">$1,900,000</div>
+            <div>HVAC/Air Conditioning:</div>
+            <div className="font-medium">$2,800,000</div>
+            <div>Water Tank & Pumps:</div>
+            <div className="font-medium">$320,000</div>
+          </div>
+        </div>
+
+        <div className="bg-red-50 p-3 rounded border-l-4 border-red-400">
+          <h4 className="font-medium text-red-800 mb-2">Kitchen & Bathrooms</h4>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>Kitchen Cabinets & Counters:</div>
+            <div clas
